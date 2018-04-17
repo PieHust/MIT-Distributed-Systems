@@ -1,5 +1,13 @@
 package mapreduce
 
+import (
+	"bufio"
+	"encoding/json"
+	"io"
+	"os"
+	"sort"
+)
+
 func doReduce(
 	jobName string, // the name of the whole MapReduce job
 	reduceTask int, // which reduce task this is
@@ -44,4 +52,43 @@ func doReduce(
 	//
 	// Your code here (Part I).
 	//
+	var keyValues []KeyValue
+	for i := 0; i < nMap; i++ {
+		interFile := reduceName(jobName, i, reduceTask)
+		file, ferr := os.Open(interFile)
+		if ferr != nil {
+			panic(ferr)
+		}
+		defer file.Close()
+		br := bufio.NewReader(file)
+		for {
+			line, _, next := br.ReadLine()
+			var tmp KeyValue
+			json.Unmarshal(line, &tmp)
+			if next == io.EOF {
+				break
+			}
+			keyValues = append(keyValues, tmp)
+		}
+	}
+	sort.Slice(keyValues, func(i, j int) bool {
+		return keyValues[i].Key < keyValues[j].Key
+	})
+
+	oFile, _ := os.OpenFile(outFile, os.O_CREATE|os.O_WRONLY, 0666)
+	defer oFile.Close()
+	enc := json.NewEncoder(oFile)
+
+	tmp := keyValues[0].Key
+	var values []string
+	for _, keyValue := range keyValues {
+		if keyValue.Key == tmp {
+			values = append(values, keyValue.Value)
+		} else {
+			enc.Encode(KeyValue{tmp, reduceF(tmp, values)})
+			values = []string{keyValue.Value}
+			tmp = keyValue.Key
+		}
+	}
+	enc.Encode(KeyValue{tmp, reduceF(tmp, values)})
 }
