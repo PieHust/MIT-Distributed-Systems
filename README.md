@@ -15,3 +15,7 @@ do_reduce执行一个reduce任务。读取M个map处理结果文件，并将得�
 mapF对文件内容按照单词分词，并按照<word, 1>格式生成KeyValue类型。
 * reduceF函数实现
 reduceF函数遍历value值将同一键的值相加得到一个单词出现的总次数。
+
+#### lab1.3 distributing MapReduce tasks
+schedule调度任务给空闲的worker。
+获取空闲worker，并分配任务给它，使任务并发进行。等待任务都执行结束后，schedule函数返回。
