@@ -19,3 +19,30 @@ reduceF函数遍历value值将同一键的值相加得到一个单词出现的�
 #### lab1.3 distributing MapReduce tasks
 schedule调度任务给空闲的worker。
 获取空闲worker，并分配任务给它，使任务并发进行。等待任务都执行结束后，schedule函数返回。
+
+#### lab1.4 Handling worker failures
+处理worker错误，对于出现错误的任务重新分配一个worker再次执行该任务
+
+#### lab1.5 Inverted index generation
+先从文档中分词生成倒排表；reduce阶段对文档进行去重排序，并按照相应的格式生成结果。
+
+实验一结果
+```bash
+bash ./test-mr.sh
+
+==> Part I
+ok      mapreduce   3.544s
+
+==> Part II
+Passed test
+
+==> Part III
+ok      mapreduce   3.884s
+
+==> Part IV
+ok      mapreduce   4.233s
+
+==> Part V (inverted index)
+Passed test
+
+```
